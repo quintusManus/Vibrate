@@ -6,10 +6,13 @@ module.exports = async (req, res) => {
 
   const creds = Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString('base64');
 
+  const redirectUri = process.env.SPOTIFY_REDIRECT_URI ||
+    `http://${req.headers.host}/api/callback-spotify`;
+
   const params = new URLSearchParams({
     grant_type: 'authorization_code',
     code,
-    redirect_uri: process.env.SPOTIFY_REDIRECT_URI
+    redirect_uri: redirectUri
   });
 
   const tokenRes = await fetch('https://accounts.spotify.com/api/token', {
