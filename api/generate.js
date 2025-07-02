@@ -22,9 +22,15 @@ module.exports = async (req, res) => {
     limit: 20
   });
 
-  const recRes = await fetch(`https://api.spotify.com/v1/recommendations?${params}`, {
-    headers: { Authorization: `Bearer ${access_token}` }
-  });
+  const recRes = await fetch(
+    `https://api.spotify.com/v1/recommendations?${params}`,
+    {
+      headers: { Authorization: `Bearer ${access_token}` }
+    }
+  );
+  if (!recRes.ok) {
+    return res.status(500).json({ error: 'spotify_recommendations_failed' });
+  }
   const rec = await recRes.json();
   const uris = rec.tracks.map(t => t.uri);
 
@@ -36,9 +42,12 @@ module.exports = async (req, res) => {
     },
     body: JSON.stringify({ name: 'Vibrate Playlist', public: false })
   });
+  if (!playlistRes.ok) {
+    return res.status(500).json({ error: 'playlist_create_failed' });
+  }
   const playlist = await playlistRes.json();
 
-  await fetch(`https://api.spotify.com/v1/playlists/${playlist.id}/tracks`, {
+  const addRes = await fetch(`https://api.spotify.com/v1/playlists/${playlist.id}/tracks`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${access_token}`,
@@ -46,6 +55,9 @@ module.exports = async (req, res) => {
     },
     body: JSON.stringify({ uris })
   });
+  if (!addRes.ok) {
+    return res.status(500).json({ error: 'add_tracks_failed' });
+  }
 
   res.status(200).json({
     embedUrl: `https://open.spotify.com/embed/playlist/${playlist.id}`,

@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
 
     const subscription = await stripe.subscriptions.create({
       customer: customer.id,
-      items: [{ price: 'price_123' }],
+      items: [{ price: process.env.STRIPE_PRICE_ID }],
       trial_period_days: 7
     });
 
