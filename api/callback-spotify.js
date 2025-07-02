@@ -28,7 +28,9 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'token_exchange_failed' });
   }
   const tokenData = await tokenRes.json();
-  // TODO: Store tokenData.access_token and tokenData.refresh_token for the user
-  // For now, just return them
-  res.status(200).json(tokenData);
+  // Store tokens in cookies for later use
+  res.cookie('spotify_access_token', tokenData.access_token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+  res.cookie('spotify_refresh_token', tokenData.refresh_token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+  // Optionally redirect to frontend or send a success message
+  res.redirect('/'); // Change this to your frontend URL if needed
 };

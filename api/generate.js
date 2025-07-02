@@ -1,7 +1,17 @@
 const fetch = require('node-fetch');
 
-async function getUserToken(userId) {
-  // TODO: retrieve stored OAuth token for user
+// Helper to get access token from cookies
+function getAccessToken(req) {
+  const cookie = req.headers.cookie || '';
+  const match = cookie.match(/spotify_access_token=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+async function getUserToken(userId, req) {
+  // Use access token from cookie if available
+  const access_token = getAccessToken(req);
+  if (access_token) return { access_token };
+  // fallback (should not be needed anymore)
   return { access_token: process.env.SPOTIFY_ACCESS_TOKEN };
 }
 
@@ -11,7 +21,10 @@ module.exports = async (req, res) => {
 
   // TODO: check trial/subscription status
 
-  const { access_token } = await getUserToken(userId);
+  const { access_token } = await getUserToken(userId, req);
+  if (!access_token) {
+    return res.status(401).json({ error: 'missing_spotify_access_token' });
+  }
 
   const params = new URLSearchParams({
     seed_artists: seeds.seed_artists.join(','),
