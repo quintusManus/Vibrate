@@ -1,0 +1,13 @@
+{
+  "name": "vibrate",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm --prefix app run dev\" \"nodemon api/index.js\"",
+    "build": "npm --prefix app run build",
+    "start": "node api/index.js"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1",
+    "nodemon": "^2.0.22"
+  }
+}
