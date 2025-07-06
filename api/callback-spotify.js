@@ -29,8 +29,20 @@ module.exports = async (req, res) => {
   }
   const tokenData = await tokenRes.json();
   // Store tokens in cookies for later use
-  res.cookie('spotify_access_token', tokenData.access_token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-  res.cookie('spotify_refresh_token', tokenData.refresh_token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-  // Optionally redirect to frontend or send a success message
+  res.cookie('spotify_access_token', tokenData.access_token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    path: '/',
+    maxAge: 3600 * 1000 // 1 hour
+  });
+  res.cookie('spotify_refresh_token', tokenData.refresh_token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'None',
+    path: '/',
+    maxAge: 30 * 24 * 3600 * 1000 // 30 days
+  });
+  // Redirect to frontend root after login
   res.redirect('/'); // Change this to your frontend URL if needed
 };

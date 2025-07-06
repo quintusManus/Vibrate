@@ -8,7 +8,7 @@ module.exports = (req, res) => {
     client_id: process.env.SPOTIFY_CLIENT_ID,
     response_type: 'code',
     redirect_uri: redirectUri,
-    scope: 'playlist-modify-private playlist-modify-public',
+    scope: 'playlist-modify-private playlist-modify-public user-read-private user-read-email',
     state: Math.random().toString(36).substring(2, 15)
   });
   res.redirect(`https://accounts.spotify.com/authorize?${params}`);
